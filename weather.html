@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<style>
+    body{
+        position: relative;
+        background: url("lib/sun2.jpg") no-repeat left top/100%;
+    }
+    #app input{
+        width:500px;
+        height:40px;
+        border-radius: 20px;
+        padding:0px 10px;
+        display: block;
+        margin:50px 0px;
+        outline: none;
+        border-color: aliceblue;
+        font-size:16px;
+        margin-left:80px;
+    }
+    #app img{
+        width:400px;
+        position: absolute;
+        top:0px;
+        left:0px;
+    }
+    ul{
+        margin-left:100px;
+    }
+    p{
+        font-size:20px;
+    }
+    ul li{
+        list-style:none;
+        padding:10px 0px;
+        color:black;
+        font-weight: 500px;
+        font-size:20px;
+    }
+    /* 动画效果 */
+    .list-item {
+       display: inline-block;
+       margin-right: 10px;
+    }
+    .list-enter-active, .list-leave-active {
+      transition: all 2s;
+    }
+   .list-enter, .list-leave-to
+    {
+      opacity: 0;
+      transform: translateX(300px);
+    }
+</style>
+
+<body>
+    <div id="app">
+        
+        <input type="text" placeholder="请输入您想搜索的城市" v-model="city" @keyup.enter="search">
+        <p>{{ganmao}}</p>
+        <transition-group name="list" tag="ul">
+        <li v-for="(item, index) in weatherList" :style="{'transition-delay':index*100+'ms'}" :key="item.date">
+            {{item.date}}:{{item.low}}--{{item.high}}{{item.fenxiang}}
+        </li>
+        </transition-group>
+    </div>
+</body>
+
+</html>
+<script src="lib/vue.js"></script>
+<!-- 引入一个resource 用来请求网络数据 所有的网络请求 都是通过$http来使用
+    先导入vue 再倒入 vue-resource -->
+<script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.1"></script>
+<script>
+    var app = new Vue({
+        el: "#app",
+        data: {
+            city: '',
+            weatherList: [],
+            ganmao:''
+        },
+        methods: {
+            search() {
+                this.$http.get("http://wthrcdn.etouch.cn/weather_mini?city=" + this.city).then(Response => {
+                    // 返回结果
+                    console.log(Response);
+                    this.weatherList = Response.body.data.forecast;
+                    this.ganmao=Response.body.data.ganmao;
+                })
+            }
+        }
+    })
+</script>
